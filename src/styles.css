@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.liquid-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 5%, rgba(28, 216, 116, 0.35), transparent 28rem),
+    radial-gradient(circle at 88% 12%, rgba(0, 188, 212, 0.28), transparent 30rem),
+    radial-gradient(circle at 58% 92%, rgba(255, 255, 255, 0.7), transparent 24rem);
+}
+
+.glass {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.28));
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  backdrop-filter: blur(24px) saturate(150%);
+  box-shadow: 0 24px 80px rgba(10, 105, 48, 0.16);
+}

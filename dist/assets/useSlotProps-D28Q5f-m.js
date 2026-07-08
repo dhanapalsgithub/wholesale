@@ -1,0 +1,1 @@
+import{al as f,am as i,q as m,an as S}from"./index-Cm1HsApV.js";function u(o){const{elementType:s,externalSlotProps:t,ownerState:e,skipResolvingSlotProps:n=!1,...p}=o,r=n?{}:f(t,e),{props:a,internalRef:l}=i({...p,externalSlotProps:r}),P=m(l,r?.ref,o.additionalProps?.ref);return S(s,{...a,ref:P},e)}export{u};

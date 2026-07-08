@@ -1,0 +1,21 @@
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Customers');
+  const data = JSON.parse(e.postData.contents);
+
+  sheet.appendRow([
+    new Date(),
+    data.id,
+    data.name,
+    data.email,
+    data.mobile,
+    data.address,
+    data.city,
+    data.state,
+    data.pincode,
+    data.createdAt
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
