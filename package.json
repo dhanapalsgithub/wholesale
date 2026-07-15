@@ -1,7 +1,7 @@
 {
  "scripts": {
 "dev": "vite",
-  "build": "chmod +x node_modules/.bin/tsc && tsc && vite build",
+  "build": "npx tsc && vite build",
   "preview": "vite preview"
 
 },
