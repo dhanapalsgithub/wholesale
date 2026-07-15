@@ -1,8 +1,9 @@
 {
  "scripts": {
- "dev": "vite",
-  "build": "npm install && npx tsc && vite build",
+"dev": "vite",
+  "build": "chmod +x node_modules/.bin/tsc && tsc && vite build",
   "preview": "vite preview"
+
 },
   "dependencies": {
     "@emotion/react": "^11.14.0",
