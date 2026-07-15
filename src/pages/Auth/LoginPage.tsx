@@ -15,12 +15,12 @@ export default function LoginPage({ customers, onLogin, onRegister }: Props) {
   const [register, setRegister] = useState<NewCustomerInput>({
     name: '',
     email: '',
-    password: '',
     mobile: '',
     address: '',
     city: 'Chennai',
     state: 'Tamil Nadu',
     pincode: '',
+    password: '',
   });
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -55,15 +55,19 @@ export default function LoginPage({ customers, onLogin, onRegister }: Props) {
               <TextField label="State" value={register.state} onChange={(event) => updateRegister('state', event.target.value)} />
               <TextField label="Pincode" value={register.pincode} onChange={(event) => updateRegister('pincode', event.target.value)} />
             </>
+            
           )}
           {error && <Typography color="error">{error}</Typography>}
           {tab === 0 && (
+            
             <Button variant="contained" onClick={() => {
               const customer = customers.find((entry) => entry.email === email && entry.password === password);
               if (customer) onLogin(customer); else setError('Invalid customer login.');
+              console.log("Current customers list:", customers);
             }}>Login</Button>
           )}
           {tab === 1 && (
+            
             <Button
               variant="contained"
               disabled={saving}

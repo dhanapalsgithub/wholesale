@@ -27,6 +27,7 @@ export async function saveCustomerToGoogleSheet(customer: Customer) {
         city: customer.city,
         state: customer.state,
         pincode: customer.pincode,
+        password: customer.password, // இதோ, பாஸ்வேர்டைச் சேர்த்துள்ளேன்!
         createdAt: new Date().toISOString(),
       }),
     });

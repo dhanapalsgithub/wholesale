@@ -8,12 +8,26 @@ import type { Category, Product } from '../../types';
 interface Props {
   products: Product[];
   categories: Category[];
+  cart: any[];
   favorites: string[];
   onAddToCart: (id: string) => void;
+  onUpdateQty: (id: string, qty: number) => void;
+  onRemove: (id: string) => void;
   onToggleFavorite: (id: string) => void;
 }
 
-export default function ProductsPage({ products, categories, favorites, onAddToCart, onToggleFavorite }: Props) {
+// இங்கே onUpdateQty மற்றும் onRemove ஆகியவற்றைச் சேர்க்கவும்
+export default function ProductsPage({ 
+  products, 
+  categories, 
+  favorites, 
+  onAddToCart, 
+  cart, 
+  onUpdateQty, 
+  onRemove, 
+  onToggleFavorite 
+}: Props) {
+  
   const { id } = useParams();
   const [params] = useSearchParams();
   const [view, setView] = useState('grid');
@@ -30,6 +44,7 @@ export default function ProductsPage({ products, categories, favorites, onAddToC
       .filter((product) => product.rating >= filters.minRating)
       .filter((product) => !filters.inStock || product.stock > 0)
       .filter((product) => !filters.organic || product.organic);
+    
     return [...rows].sort((a, b) => {
       if (sort === 'low') return a.offerPrice - b.offerPrice;
       if (sort === 'high') return b.offerPrice - a.offerPrice;
@@ -64,7 +79,15 @@ export default function ProductsPage({ products, categories, favorites, onAddToC
           <Grid container spacing={2}>
             {shown.map((product) => (
               <Grid key={product.id} size={{ xs: 12, sm: view === 'list' ? 12 : 6, lg: view === 'list' ? 12 : 3 }}>
-                <ProductCard product={product} wished={favorites.includes(product.id)} onAddToCart={onAddToCart} onToggleFavorite={onToggleFavorite} />
+               <ProductCard
+                  product={product}
+                  wished={(favorites || []).includes(product.id)}
+                  isAdded={(cart || []).some((item: any) => item.productId === product.id)}
+                  quantity={(cart || []).find(item => item.productId === product.id)?.quantity || 0}
+                  onAddToCart={onAddToCart}
+                  onUpdateQty={(id, qty) => qty <= 0 ? onRemove(id) : onUpdateQty(id, qty)}
+                  onToggleFavorite={onToggleFavorite}
+                />
               </Grid>
             ))}
           </Grid>

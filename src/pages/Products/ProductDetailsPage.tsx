@@ -3,22 +3,35 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProductCard from '../../components/common/ProductCard';
 import RatingStars from '../../components/common/RatingStars';
-import type { Product } from '../../types';
+import type { Product, CartItem } from '../../types';
 
-export default function ProductDetailsPage({ products, favorites, onAddToCart, onToggleFavorite }: { products: Product[]; favorites: string[]; onAddToCart: (id: string) => void; onToggleFavorite: (id: string) => void }) {
+interface Props {
+  products: Product[];
+  favorites: string[];
+  cart: CartItem[]; // cart-ஐ ப்ராப்ஸ் ஆகப் பெற வேண்டும்
+  onAddToCart: (id: string) => void;
+  onUpdateQty: (id: string, qty: number) => void; // qty மாற்றும் பங்க்ஷன்
+  onToggleFavorite: (id: string) => void;
+}
+
+export default function ProductDetailsPage({ products, favorites, cart, onAddToCart, onUpdateQty, onToggleFavorite }: Props) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState(0);
+
   const product = products.find((entry) => entry.id === id);
   if (!product) return <Container sx={{ py: 6 }}><Typography>Product not found.</Typography></Container>;
+
   const related = products.filter((entry) => entry.category === product.category && entry.id !== product.id);
+  const cartItem = cart.find(item => item.productId === product.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, borderRadius: 5 }}>
             <Box component="img" src={product.images[0]} alt={product.name} sx={{ width: '100%', height: { xs: 320, md: 520 }, objectFit: 'cover', borderRadius: 4 }} />
-            <Stack direction="row" spacing={1} mt={1}>{product.images.map((image) => <Box key={image} component="img" src={image} sx={{ width: 82, height: 72, objectFit: 'cover', borderRadius: 2 }} />)}</Stack>
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
@@ -32,11 +45,22 @@ export default function ProductDetailsPage({ products, favorites, onAddToCart, o
               <Typography sx={{ textDecoration: 'line-through' }}>₹{product.price}</Typography>
               <Chip label={`${product.discount}% off`} color="success" />
             </Stack>
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" size="large" onClick={() => onAddToCart(product.id)}>Add to Cart</Button>
-              <Button variant="outlined" size="large" onClick={() => { onAddToCart(product.id); navigate('/checkout'); }}>Buy Now</Button>
+
+            {/* Quantity Counter */}
+            <Stack direction="row" spacing={2} alignItems="center">
+              {quantity > 0 ? (
+                <Stack direction="row" alignItems="center" spacing={2} sx={{ border: '1px solid #ddd', borderRadius: 2, p: 1 }}>
+                  <Button onClick={() => onUpdateQty(product.id, quantity - 1)}>-</Button>
+                  <Typography fontWeight={900}>{quantity}</Typography>
+                  <Button onClick={() => onUpdateQty(product.id, quantity + 1)}>+</Button>
+                </Stack>
+              ) : (
+                <Button variant="contained" size="large" onClick={() => onAddToCart(product.id)}>Add to Cart</Button>
+              )}
+              <Button variant="outlined" size="large" onClick={() => { if (quantity === 0) onAddToCart(product.id); navigate('/checkout'); }}>Buy Now</Button>
               <Button size="large" onClick={() => onToggleFavorite(product.id)}>{favorites.includes(product.id) ? 'Wishlisted' : 'Wishlist'}</Button>
             </Stack>
+
             <Paper sx={{ p: 2 }}>
               <Tabs value={tab} onChange={(_, value) => setTab(value)}>
                 <Tab label="Nutrition" />
@@ -54,8 +78,23 @@ export default function ProductDetailsPage({ products, favorites, onAddToCart, o
           </Stack>
         </Grid>
       </Grid>
+
       <Typography variant="h4" mt={5} mb={2}>Related Products</Typography>
-      <Grid container spacing={2}>{related.slice(0, 6).map((entry) => <Grid key={entry.id} size={{ xs: 12, sm: 6, md: 3, lg: 2 }}><ProductCard product={entry} wished={favorites.includes(entry.id)} onAddToCart={onAddToCart} onToggleFavorite={onToggleFavorite} /></Grid>)}</Grid>
+      <Grid container spacing={2}>
+        {related.slice(0, 6).map((entry) => (
+          <Grid key={entry.id} size={{ xs: 12, sm: 6, md: 3, lg: 2 }}>
+            <ProductCard
+              product={entry}
+              wished={favorites.includes(entry.id)}
+              quantity={cart.find(c => c.productId === entry.id)?.quantity || 0}
+              isAdded={cart.some(c => c.productId === entry.id)} // இதைச் சேர்க்கவும்
+              onAddToCart={onAddToCart}
+              onUpdateQty={onUpdateQty}
+              onToggleFavorite={onToggleFavorite}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </Container>
   );
 }

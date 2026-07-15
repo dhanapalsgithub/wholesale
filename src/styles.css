@@ -23,6 +23,15 @@ a {
 .glass {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.28));
   border: 1px solid rgba(255, 255, 255, 0.34);
-  backdrop-filter: blur(24px) saturate(150%);
+  /* backdrop-filter: blur(24px) saturate(150%); */
   box-shadow: 0 24px 80px rgba(10, 105, 48, 0.16);
+}
+@keyframes blink-effect {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.95); background-color: #e0e0e0; }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.blink-animation {
+  animation: blink-effect 0.5s ease;
 }

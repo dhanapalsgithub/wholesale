@@ -7,18 +7,30 @@ import type { Category, Product } from '../../types';
 interface Props {
   categories: Category[];
   products: Product[];
+  cart: any[];
   favorites: string[];
   onAddToCart: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  onUpdateQty: (id: string, qty: number) => void; // இதைச் சேர்க்கவும்
+  onRemove: (id: string) => void;                // இதைச் சேர்க்கவும்
+  
 }
 
-const Section = ({ title, products, favorites, onAddToCart, onToggleFavorite }: Props & { title: string }) => (
+const Section = ({ title, products, favorites, onAddToCart, cart, onToggleFavorite, onUpdateQty, onRemove }: Props & { title: string }) => (
   <Box mt={5}>
     <Typography variant="h4" mb={2}>{title}</Typography>
     <Grid container spacing={2}>
       {products.slice(0, 8).map((product) => (
         <Grid key={product.id} size={{ xs: 12, sm: 6, md: 3, lg: 2.4 }}>
-          <ProductCard product={product} wished={favorites.includes(product.id)} onAddToCart={onAddToCart} onToggleFavorite={onToggleFavorite} />
+         <ProductCard 
+            product={product} 
+            wished={(favorites || []).includes(product.id)}
+            isAdded={(cart || []).some((item: any) => item.productId === product.id)}
+            quantity={(cart || []).find((i: any) => i.productId === product.id)?.quantity || 0}
+            onAddToCart={onAddToCart} 
+            onUpdateQty={onUpdateQty}
+            onToggleFavorite={onToggleFavorite} 
+          />
         </Grid>
       ))}
     </Grid>
@@ -60,14 +72,6 @@ export default function HomePage(props: Props) {
       <Section title="Recommended" {...props} products={products.filter((product) => product.featured)} />
       <Section title="New Arrivals" {...props} products={products.filter((product) => product.newArrival)} />
       <Section title="Organic Foods" {...props} products={products.filter((product) => product.organic)} />
-      <Box mt={5}>
-        <Typography variant="h4" mb={2}>Customer Reviews</Typography>
-        <Grid container spacing={2}>
-          {['Very fresh vegetables and smooth checkout.', 'The glass UI feels premium and fast.', 'Owner dashboard makes order tracking simple.'].map((text) => (
-            <Grid key={text} size={{ xs: 12, md: 4 }}><Paper sx={{ p: 3 }}><Typography>{text}</Typography></Paper></Grid>
-          ))}
-        </Grid>
-      </Box>
     </Container>
   );
 }
